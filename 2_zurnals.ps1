@@ -1,6 +1,16 @@
-$time=(get-date).adddays(-7)
-Write-Host $time
-$errosr=Get-WinEvent -FilterHashtable{
-    $name
+$time=(get-date).AddDays(-7)
+$errors=get-winevent -filterhashtable @{
+    LogName ='system'
+    Level = 2
+    StartTime = $time
 }
-Out-file c:\Users\A250801DM\Downloads\Error.txt
+$file="$env:USERPROFILE\Documents\errors.txt"
+if ($errors.count -gt 10){
+    $h="[KRITISKI] Sistema ir nestabila!"
+}
+else{
+    $h="[OK] Kludu limenis normals."
+}
+$list=$errors | Select-Object TimeCreated, Message
+$h | Out-file $file
+$list | out-file $file -append
